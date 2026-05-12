@@ -11,7 +11,6 @@ import os
 import sqlite3
 import subprocess
 import sys
-import time
 
 DB_PATH = os.path.expanduser(
     "~/Library/Application Support/Alfred/Databases/clipboard.alfdb"
@@ -58,11 +57,24 @@ def set_clipboard_image(image_path):
 
 
 def paste():
-    """Simulate Cmd+V to paste into the frontmost application."""
-    # Small delay to let Alfred window close and previous app regain focus
-    time.sleep(0.15)
+    """Hide Alfred, wait for previous app to regain focus, then Cmd+V."""
     applescript = '''
     tell application "System Events"
+        -- Hide Alfred
+        if exists process "Alfred" then
+            set visible of process "Alfred" to false
+        end if
+
+        -- Wait until Alfred is no longer frontmost (max 2 seconds)
+        repeat 20 times
+            set frontApp to name of first process whose frontmost is true
+            if frontApp is not "Alfred" and frontApp is not "Alfred 5" then
+                exit repeat
+            end if
+            delay 0.1
+        end repeat
+
+        -- Paste into the now-frontmost app
         keystroke "v" using command down
     end tell
     '''
