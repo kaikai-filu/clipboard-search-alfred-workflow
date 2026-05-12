@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>bundleid</key>
+    <string>com.yzy.clipboard-search</string>
+    <key>category</key>
+    <string>Tools</string>
+    <key>connections</key>
+    <dict>
+        <key>CB-HOTKEY-TRIGGER</key>
+        <array>
+            <dict>
+                <key>destinationuid</key>
+                <string>CB-SCRIPTFILTER</string>
+                <key>modifiers</key>
+                <integer>0</integer>
+                <key>modifiersubtext</key>
+                <string></string>
+                <key>vitoclose</key>
+                <false/>
+            </dict>
+        </array>
+        <key>CB-SCRIPTFILTER</key>
+        <array>
+            <dict>
+                <key>destinationuid</key>
+                <string>CB-PASTE-ACTION</string>
+                <key>modifiers</key>
+                <integer>0</integer>
+                <key>modifiersubtext</key>
+                <string>复制并粘贴到上一个应用</string>
+                <key>vitoclose</key>
+                <true/>
+            </dict>
+            <dict>
+                <key>destinationuid</key>
+                <string>CB-PASTE-ACTION</string>
+                <key>modifiers</key>
+                <integer>1048576</integer>
+                <key>modifiersubtext</key>
+                <string>仅复制到剪贴板</string>
+                <key>vitoclose</key>
+                <true/>
+            </dict>
+        </array>
+        <key>CB-PASTE-ACTION</key>
+        <array/>
+    </dict>
+    <key>createdby</key>
+    <string>yzy</string>
+    <key>description</key>
+    <string>Extended clipboard history search — filter by keyword, type (text/image/file), time (today/yesterday/last N hours), date range, or source app. Cmd+Shift+C for quick access.</string>
+    <key>disabled</key>
+    <false/>
+    <key>name</key>
+    <string>Clipboard Search</string>
+    <key>objects</key>
+    <array>
+        <!-- Script Filter (also serves as keyword trigger) -->
+        <dict>
+            <key>config</key>
+            <dict>
+                <key>alfredfiltersresults</key>
+                <false/>
+                <key>alfredfiltersresultsmatchmode</key>
+                <integer>0</integer>
+                <key>argumenttreatemptyqueryasnil</key>
+                <false/>
+                <key>argumenttrimmode</key>
+                <integer>0</integer>
+                <key>argumenttype</key>
+                <integer>0</integer>
+                <key>escaping</key>
+                <integer>102</integer>
+                <key>keyword</key>
+                <string>{var:keyword}</string>
+                <key>queuedelaycustom</key>
+                <integer>1</integer>
+                <key>queuedelayimmediatelyinitially</key>
+                <true/>
+                <key>queuedelaymode</key>
+                <integer>0</integer>
+                <key>queuemode</key>
+                <integer>1</integer>
+                <key>runningsubtext</key>
+                <string></string>
+                <key>script</key>
+                <string>/usr/local/bin/python3 cb_search.py "{query}"</string>
+                <key>scriptargtype</key>
+                <integer>0</integer>
+                <key>scriptfile</key>
+                <string></string>
+                <key>subtext</key>
+                <string>Search clipboard history — :text :image :file :today :yesterday :Nh @app keyword</string>
+                <key>title</key>
+                <string>Search Clipboard History</string>
+                <key>type</key>
+                <integer>0</integer>
+                <key>withspace</key>
+                <true/>
+            </dict>
+            <key>type</key>
+            <string>alfred.workflow.input.scriptfilter</string>
+            <key>uid</key>
+            <string>CB-SCRIPTFILTER</string>
+            <key>version</key>
+            <integer>3</integer>
+        </dict>
+        <!-- Hotkey Trigger: Cmd+Shift+C -->
+        <dict>
+            <key>config</key>
+            <dict>
+                <key>action</key>
+                <integer>0</integer>
+                <key>argument</key>
+                <integer>0</integer>
+                <key>focusedappvariable</key>
+                <false/>
+                <key>focusedappvariablename</key>
+                <string></string>
+                <key>hotkey</key>
+                <integer>8</integer>
+                <key>hotmod</key>
+                <integer>1179648</integer>
+                <key>leftcursor</key>
+                <false/>
+                <key>modsmode</key>
+                <integer>0</integer>
+                <key>relatedAppsMode</key>
+                <integer>0</integer>
+            </dict>
+            <key>type</key>
+            <string>alfred.workflow.trigger.hotkey</string>
+            <key>uid</key>
+            <string>CB-HOTKEY-TRIGGER</string>
+            <key>version</key>
+            <integer>2</integer>
+        </dict>
+        <!-- Paste Action -->
+        <dict>
+            <key>config</key>
+            <dict>
+                <key>concurrently</key>
+                <false/>
+                <key>escaping</key>
+                <integer>102</integer>
+                <key>script</key>
+                <string>/usr/local/bin/python3 cb_paste.py "{query}"</string>
+                <key>scriptargtype</key>
+                <integer>0</integer>
+                <key>scriptfile</key>
+                <string></string>
+                <key>type</key>
+                <integer>0</integer>
+            </dict>
+            <key>type</key>
+            <string>alfred.workflow.action.script</string>
+            <key>uid</key>
+            <string>CB-PASTE-ACTION</string>
+            <key>version</key>
+            <integer>2</integer>
+        </dict>
+    </array>
+    <key>readme</key>
+    <string># Clipboard Search for Alfred
+
+An extended clipboard history search workflow for Alfred 5.
+
+## Features
+
+- **Keyword search**: `cb search terms` to find text in clipboard history
+- **Type filters**: `cb :text`, `cb :image`, `cb :file`
+- **Time filters**: `cb :today`, `cb :yesterday`, `cb :2h`, `cb :30m`, `cb :3d`
+- **Date filters**: `cb :2026-05-10` or `cb :2026-05-01..2026-05-10`
+- **App filters**: `cb @chrome`, `cb @finder`
+- **Combined**: `cb search :text :today @chrome`
+- **Hotkey**: Cmd+Shift+C to open clipboard search
+- **Paste**: Enter to copy selected item back to clipboard
+- **Preview**: Cmd+Enter to Quick Look images/files
+
+## Setup
+
+1. Double-click the .alfredworkflow file to install
+2. Customize the keyword and hotkey in Alfred Workflow preferences
+3. Ensure Python 3 is installed (`python3 --version`)
+
+## How it works
+
+Reads Alfred's own clipboard database at:
+~/Library/Application Support/Alfred/Databases/clipboard.alfdb
+
+No external dependencies required.</string>
+    <key>uidata</key>
+    <dict>
+        <key>CB-HOTKEY-TRIGGER</key>
+        <dict>
+            <key>colorindex</key>
+            <integer>2</integer>
+            <key>note</key>
+            <string>Cmd+Shift+C to search clipboard</string>
+            <key>xpos</key>
+            <real>200</real>
+            <key>ypos</key>
+            <real>75</real>
+        </dict>
+        <key>CB-SCRIPTFILTER</key>
+        <dict>
+            <key>colorindex</key>
+            <integer>0</integer>
+            <key>note</key>
+            <string>Search and filter clipboard entries (keyword: cb)</string>
+            <key>xpos</key>
+            <real>500</real>
+            <key>ypos</key>
+            <real>75</real>
+        </dict>
+        <key>CB-PASTE-ACTION</key>
+        <dict>
+            <key>colorindex</key>
+            <integer>3</integer>
+            <key>note</key>
+            <string>Copy selected item to clipboard</string>
+            <key>xpos</key>
+            <real>800</real>
+            <key>ypos</key>
+            <real>75</real>
+        </dict>
+    </dict>
+    <key>userconfigurationconfig</key>
+    <array>
+        <dict>
+            <key>config</key>
+            <dict>
+                <key>default</key>
+                <string>cb</string>
+                <key>placeholder</key>
+                <string></string>
+                <key>required</key>
+                <true/>
+                <key>trim</key>
+                <true/>
+            </dict>
+            <key>description</key>
+            <string>Keyword to trigger clipboard search (default: cb)</string>
+            <key>label</key>
+            <string>Keyword</string>
+            <key>type</key>
+            <string>textfield</string>
+            <key>variable</key>
+            <string>keyword</string>
+        </dict>
+    </array>
+    <key>variablesdontexport</key>
+    <array/>
+    <key>version</key>
+    <string>1.0.0</string>
+    <key>webaddress</key>
+    <string></string>
+</dict>
+</plist>
