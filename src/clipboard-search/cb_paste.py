@@ -1,35 +1,35 @@
 #!/usr/bin/env python3
-"""Alfred Run Script action for pasting clipboard history items.
-
-Receives the ts value (Mac absolute time) as argument, fetches the
-corresponding clipboard entry from the database, copies it to the
-system clipboard, and then simulates Cmd+V to paste into the
-previously focused application.
-"""
+"""Alfred Run Script action for pasting clipboard history items."""
 
 import os
 import sqlite3
 import subprocess
 import sys
+from datetime import datetime
 
 DB_PATH = os.path.expanduser(
     "~/Library/Application Support/Alfred/Databases/clipboard.alfdb"
 )
 DATA_DIR = DB_PATH + ".data"
+DEBUG_LOG = "/tmp/cb_paste_debug.log"
+
+
+def log(msg):
+    try:
+        with open(DEBUG_LOG, "a") as f:
+            f.write(f"{datetime.now():%H:%M:%S.%f} {msg}\n")
+    except Exception:
+        pass
 
 
 def set_clipboard_text(text):
-    """Copy plain text to the system clipboard."""
     proc = subprocess.run(["pbcopy"], input=text, text=True, timeout=5)
     return proc.returncode == 0
 
 
 def set_clipboard_file(filepath):
-    """Copy a file reference to the Finder clipboard via osascript."""
     applescript = (
-        'set the clipboard to (POSIX file "{path}" as alias)'.format(
-            path=filepath
-        )
+        'set the clipboard to (POSIX file "{path}" as alias)'.format(path=filepath)
     )
     proc = subprocess.run(
         ["osascript", "-e", applescript], capture_output=True, text=True, timeout=10
@@ -38,7 +38,6 @@ def set_clipboard_file(filepath):
 
 
 def set_clipboard_image(image_path):
-    """Copy an image to the clipboard as an image via osascript."""
     applescript = '''
     use framework "AppKit"
     use scripting additions
@@ -57,44 +56,62 @@ def set_clipboard_image(image_path):
 
 
 def paste():
-    """Hide Alfred, wait for previous app to regain focus, then Cmd+V."""
-    applescript = '''
-    tell application "System Events"
-        -- Hide Alfred
-        if exists process "Alfred" then
-            set visible of process "Alfred" to false
-        end if
+    """Spawn a detached background process to paste after Alfred closes.
 
-        -- Wait until Alfred is no longer frontmost (max 2 seconds)
-        repeat 20 times
-            set frontApp to name of first process whose frontmost is true
-            if frontApp is not "Alfred" and frontApp is not "Alfred 5" then
-                exit repeat
-            end if
+    The main script exits immediately so Alfred can close (vitoclose=true).
+    The background process waits for focus to return to the previous app,
+    then fires Cmd+V.
+    """
+    paste_script = '''
+    on run
+        -- Poll until Alfred is no longer frontmost (max 3 seconds)
+        repeat 30 times
+            try
+                tell application "System Events"
+                    set frontApp to name of first process whose frontmost is true
+                end tell
+                if frontApp is not "Alfred" and frontApp is not "Alfred 5" then
+                    exit repeat
+                end if
+            end try
             delay 0.1
         end repeat
 
-        -- Paste into the now-frontmost app
-        keystroke "v" using command down
-    end tell
+        -- Give focus transition a moment to settle
+        delay 0.15
+
+        -- Paste into the frontmost app
+        try
+            tell application "System Events"
+                keystroke "v" using command down
+            end tell
+        end try
+    end run
     '''
-    subprocess.run(
-        ["osascript", "-e", applescript],
-        capture_output=True, text=True, timeout=5,
+
+    proc = subprocess.Popen(
+        ["osascript", "-e", paste_script],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,  # Detach completely from this process
     )
+    log(f"spawned background paste pid={proc.pid}")
 
 
 def main():
+    log("=== cb_paste start ===")
+
     if len(sys.argv) < 2:
-        print("No argument provided", file=sys.stderr)
+        log("ERROR: no argument")
         sys.exit(1)
 
     arg = sys.argv[1]
     copy_only = arg.startswith("copyonly:")
     ts = arg.replace("copyonly:", "", 1) if copy_only else arg
+    log(f"arg={arg} ts={ts} copy_only={copy_only}")
 
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
         conn.row_factory = sqlite3.Row
         cursor = conn.execute(
             "SELECT item, ts, app, dataType, dataHash FROM clipboard WHERE CAST(ts AS TEXT) = ?",
@@ -103,16 +120,17 @@ def main():
         row = cursor.fetchone()
         conn.close()
     except sqlite3.Error as e:
-        print(f"Database error: {e}", file=sys.stderr)
+        log(f"DB error: {e}")
         sys.exit(1)
 
     if not row:
-        print(f"No entry found for ts={ts}", file=sys.stderr)
+        log("No entry found")
         sys.exit(1)
 
     item = row["item"] or ""
     data_type = row["dataType"]
     data_hash = row["dataHash"] or ""
+    log(f"data_type={data_type} item_preview={item[:60]}")
 
     ok = False
 
@@ -126,7 +144,7 @@ def main():
             if not ok:
                 ok = set_clipboard_file(image_path)
         else:
-            print(f"Image file not found: {image_path}", file=sys.stderr)
+            log(f"Image file not found: {image_path}")
             sys.exit(1)
     elif data_type == 2:
         base_hash = data_hash.replace(".tiff", "")
@@ -140,31 +158,34 @@ def main():
                 if os.path.exists(original_path):
                     ok = set_clipboard_file(original_path)
                 else:
-                    print(f"Original file not found: {original_path}", file=sys.stderr)
+                    log(f"Original file not found: {original_path}")
                     sys.exit(1)
             else:
-                print("Invalid plist format", file=sys.stderr)
+                log("Invalid plist format")
                 sys.exit(1)
         else:
             alt_path = os.path.join(DATA_DIR, base_hash)
             if os.path.exists(alt_path):
                 ok = set_clipboard_file(alt_path)
             else:
-                print(f"No data found for hash: {base_hash}", file=sys.stderr)
+                log(f"No data found for hash: {base_hash}")
                 sys.exit(1)
     else:
-        print(f"Unknown data type: {data_type}", file=sys.stderr)
+        log(f"Unknown data type: {data_type}")
         sys.exit(1)
 
     if not ok:
-        print("Failed to copy to clipboard", file=sys.stderr)
+        log("Failed to copy to clipboard")
         sys.exit(1)
 
+    log("copy OK")
+
     if copy_only:
+        log("copy_only mode, skipping paste")
         return
 
-    # Auto-paste into the frontmost app
     paste()
+    log("=== cb_paste done ===")
 
 
 if __name__ == "__main__":
