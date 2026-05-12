@@ -56,46 +56,53 @@ def set_clipboard_image(image_path):
 
 
 def paste():
-    """Spawn a detached background process to paste after Alfred closes.
+    """Write a background AppleScript to a temp file and spawn it.
 
     The main script exits immediately so Alfred can close (vitoclose=true).
-    The background process waits for focus to return to the previous app,
-    then fires Cmd+V.
+    The background osascript polls until Alfred loses focus, then pastes.
     """
-    paste_script = '''
-    on run
-        -- Poll until Alfred is no longer frontmost (max 3 seconds)
-        repeat 30 times
-            try
-                tell application "System Events"
-                    set frontApp to name of first process whose frontmost is true
-                end tell
-                if frontApp is not "Alfred" and frontApp is not "Alfred 5" then
-                    exit repeat
-                end if
-            end try
-            delay 0.1
-        end repeat
+    import tempfile
 
-        -- Give focus transition a moment to settle
-        delay 0.15
+    script = """on run
+    set logFile to "/tmp/cb_paste_debug.log"
+    do shell script "date '+%H:%M:%S bg-start' >> " & quoted form of logFile
 
-        -- Paste into the frontmost app
+    repeat 30 times
+        set frontApp to ""
         try
             tell application "System Events"
-                keystroke "v" using command down
+                set frontApp to name of first process whose frontmost is true
             end tell
         end try
-    end run
-    '''
+        do shell script "echo 'bg-poll: " & frontApp & "' >> " & quoted form of logFile
+        if frontApp is not "Alfred" and frontApp is not "Alfred 5" then exit repeat
+        delay 0.1
+    end repeat
 
-    proc = subprocess.Popen(
-        ["osascript", "-e", paste_script],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        start_new_session=True,  # Detach completely from this process
-    )
-    log(f"spawned background paste pid={proc.pid}")
+    delay 0.3
+
+    set frontApp to ""
+    try
+        tell application "System Events"
+            set frontApp to name of first process whose frontmost is true
+        end tell
+    end try
+    do shell script "echo 'bg-paste-into: " & frontApp & "' >> " & quoted form of logFile
+
+    tell application "System Events"
+        keystroke "v" using command down
+    end tell
+
+    do shell script "date '+%H:%M:%S bg-done' >> " & quoted form of logFile
+end run"""
+
+    fd, path = tempfile.mkstemp(suffix=".scpt", prefix="cb_paste_")
+    with os.fdopen(fd, "w") as f:
+        f.write(script)
+
+    proc = subprocess.Popen(["osascript", path],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    log(f"spawned bg paste pid={proc.pid} script={path}")
 
 
 def main():
