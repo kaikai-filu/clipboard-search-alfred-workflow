@@ -164,22 +164,27 @@ def format_item(row):
         first_line = text.split("\n")[0].strip()
         title = first_line[:100] if first_line else "(empty)"
         subtitle = f"{dt_str}  {app}  {emoji} {type_name}"
+        # Pass the actual text content as arg so Copy to Clipboard can auto-paste it
+        arg = item
     elif data_type == 1:
         title = item or "Image"
         subtitle = f"{dt_str}  {app}  {emoji} {type_name}"
+        arg = f"paste:{ts}"
     elif data_type == 2:
         filename = item.replace("File: ", "") if item.startswith("File: ") else (item or "File")
         title = filename
         subtitle = f"{dt_str}  {app}  {emoji} {type_name}"
+        arg = f"paste:{ts}"
     else:
         title = str(item)[:100] if item else "(unknown)"
         subtitle = f"{dt_str}  {app}  {emoji} {type_name}"
+        arg = f"paste:{ts}"
 
     result = {
         "uid": str(ts),
         "title": title,
         "subtitle": subtitle,
-        "arg": str(ts),
+        "arg": arg,
         "text": {
             "copy": item if data_type == 0 else title,
             "largetype": item if data_type == 0 else title,
