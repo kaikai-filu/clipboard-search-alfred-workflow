@@ -33,16 +33,6 @@
                 <key>vitoclose</key>
                 <true/>
             </dict>
-            <dict>
-                <key>destinationuid</key>
-                <string>CB-PASTE-ACTION</string>
-                <key>modifiers</key>
-                <integer>1048576</integer>
-                <key>modifiersubtext</key>
-                <string></string>
-                <key>vitoclose</key>
-                <true/>
-            </dict>
         </array>
         <key>CB-CLIPBOARD</key>
         <array/>
@@ -72,7 +62,7 @@
                 <key>argumenttrimmode</key>
                 <integer>0</integer>
                 <key>argumenttype</key>
-                <integer>0</integer>
+                <integer>2</integer>
                 <key>escaping</key>
                 <integer>102</integer>
                 <key>keyword</key>
