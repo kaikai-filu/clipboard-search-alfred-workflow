@@ -1,3 +1,5 @@
+[English](README.en.md) | [日本語](README.ja.md) | [Français](README.fr.md) | [繁體中文](README.zh-Hant.md)
+
 # 剪贴板搜索 · Clipboard Search for Alfred
 
 Alfred 5 剪贴板历史增强搜索工作流（需 Powerpack 授权）。
