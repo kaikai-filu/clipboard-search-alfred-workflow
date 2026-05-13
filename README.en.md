@@ -172,6 +172,17 @@ alfred/
     └── cb_paste.py
 ```
 
+## AI-Assisted Development
+
+This project was developed with the help of Claude Code CLI, powered by DeepSeek-V4. Key contributions:
+
+- **Architecture design** — workflow structure and plist connection wiring
+- **Code generation** — Python scripts, regex patterns, AppleScript logic
+- **Debugging** — analyzing Alfred Debug logs to identify focus race conditions
+- **Multilingual docs** — English, Japanese, French, Spanish, and Traditional Chinese translations
+
+> Claude Code is an AI coding assistant CLI that reads codebases, runs commands, and edits files — especially effective for multi-step workflows and cross-file refactors.
+
 ## License
 
 MIT
