@@ -171,7 +171,35 @@
 		</dict>
 	</array>
 	<key>readme</key>
-	<string></string>
+	<string># Clipboard Search for Alfred
+
+Extended clipboard history search for Alfred 5 (requires Powerpack).
+
+Go beyond Alfred's built-in clipboard viewer — search and filter thousands of entries by keyword, type, time, date, and source application.
+
+
+## Features
+
+- **Keyword search** — full-text search across clipboard history
+- **Type filters** — `:text` `:image` `:file`
+- **Time filters** — `:today` `:yesterday` `:2h` `:30m` `:3d`
+- **Date filters** — `:2026-05-10` or `:2026-05-01..2026-05-10`
+- **App filters** — `@chrome` `@finder` `@vscode`
+- **Combine them all** — `cb keyword :text :today @chrome`
+- **Hotkey** — Cmd+Shift+C for quick access
+- **Auto-paste** — Enter pastes directly into your editor
+- **Quick Look** — Shift to preview images and files
+
+
+## How it works
+
+Reads Alfred's own clipboard database directly:
+
+```
+~/Library/Application Support/Alfred/Databases/clipboard.alfdb
+```
+
+No external dependencies — Python 3 standard library only.</string>
 	<key>uidata</key>
 	<dict>
 		<key>CB-CLIPBOARD</key>
