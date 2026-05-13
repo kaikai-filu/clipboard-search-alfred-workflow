@@ -113,7 +113,7 @@ cb :2026-05-01..2026-05-10 @vscode :text
 
 Each result displays:
 - **Title**: first line / image dimensions / filename
-- **Subtitle**: timestamp · source app · type icon
+- **Subtitle**: timestamp · source app · type icon · char count · line count (text entries)
 
 ---
 

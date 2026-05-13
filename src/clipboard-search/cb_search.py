@@ -175,9 +175,12 @@ def format_item(row):
 
     if data_type == 0:
         text = item
-        first_line = text.split("\n")[0].strip()
+        lines = text.split("\n")
+        first_line = lines[0].strip()
         title = first_line[:100] if first_line else "(empty)"
-        subtitle = f"{dt_str}  {app}  {emoji} {type_name}"
+        chars = len(text)
+        line_count = len(lines)
+        subtitle = f"{dt_str}  {app}  {emoji} {type_name}  {chars} chars · {line_count} lines"
         # Pass the actual text content as arg so Copy to Clipboard can auto-paste it
         arg = item
     elif data_type == 1:
