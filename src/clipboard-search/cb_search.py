@@ -138,26 +138,26 @@ def build_query(filters):
 
 def build_quicklook_url(data_type, data_hash):
     """Build a file:// URL for Quick Look preview of images and files."""
-    if data_type in (1, 2) and data_hash:
-        base_hash = data_hash.replace(".tiff", "")
-        if data_type == 1:
-            path = os.path.join(DATA_DIR, base_hash + ".tiff")
-        else:
-            plist_path = os.path.join(DATA_DIR, base_hash + ".plist")
-            if os.path.exists(plist_path):
-                import plistlib
-                try:
-                    with open(plist_path, "rb") as f:
-                        plist_data = plistlib.load(f)
-                    if isinstance(plist_data, list) and plist_data:
-                        path = plist_data[0]
-                        if os.path.exists(path):
-                            return "file://" + path
-                except Exception:
-                    pass
-            path = os.path.join(DATA_DIR, base_hash)
+    if not data_hash:
+        return None
+
+    if data_type == 1:
+        path = os.path.join(DATA_DIR, data_hash.replace(".tiff", "") + ".tiff")
         if os.path.exists(path):
             return "file://" + path
+    elif data_type == 2:
+        plist_path = os.path.join(DATA_DIR, data_hash)
+        if os.path.exists(plist_path):
+            import plistlib
+            try:
+                with open(plist_path, "rb") as f:
+                    plist_data = plistlib.load(f)
+                if isinstance(plist_data, list) and plist_data:
+                    original_path = plist_data[0]
+                    if os.path.exists(original_path):
+                        return "file://" + original_path
+            except Exception:
+                pass
     return None
 
 
