@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string>com.yzy.clipboard-search</string>
+	<string>com.kkfl.clipboard-search</string>
 	<key>category</key>
 	<string>Tools</string>
 	<key>connections</key>
@@ -40,7 +40,7 @@
 		</array>
 	</dict>
 	<key>createdby</key>
-	<string>yzy</string>
+	<string>kkfl</string>
 	<key>description</key>
 	<string>Extended clipboard history search — filter by keyword, type (text/image/file), time (today/yesterday/last N hours), date range, or source app. Cmd+Shift+C for quick access.</string>
 	<key>disabled</key>
