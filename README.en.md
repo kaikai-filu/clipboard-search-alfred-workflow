@@ -1,5 +1,7 @@
 # Clipboard Search for Alfred
 
+![banner](https://raw.githubusercontent.com/kaikai-filu/clipboard-search-alfred-workflow/main/assets/banner-img.png)
+
 Works with Alfred Clipboard History (Powerpack feature).
 
 Go beyond Alfred's built-in clipboard viewer — search and filter thousands of entries by keyword, type, time, date, and source application.
