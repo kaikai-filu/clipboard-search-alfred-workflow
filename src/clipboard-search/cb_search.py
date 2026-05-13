@@ -130,7 +130,7 @@ def build_query(filters):
 
     where = " AND ".join(conditions) if conditions else "1=1"
     return (
-        f"SELECT item, ts, app, dataType, dataHash FROM clipboard "
+        f"SELECT item, ts, app, apppath, dataType, dataHash FROM clipboard "
         f"WHERE {where} ORDER BY ts DESC LIMIT {MAX_RESULTS}",
         params,
     )
@@ -194,6 +194,11 @@ def format_item(row):
         subtitle = f"{dt_str}  {app}  {emoji} {type_name}"
         arg = f"paste:{ts}"
 
+    apppath = row["apppath"] or ""
+    icon = None
+    if apppath and os.path.exists(apppath):
+        icon = {"path": apppath, "type": "fileicon"}
+
     result = {
         "uid": str(ts),
         "title": title,
@@ -210,6 +215,8 @@ def format_item(row):
             }
         },
     }
+    if icon:
+        result["icon"] = icon
 
     ql = build_quicklook_url(data_type, data_hash)
     if ql:
