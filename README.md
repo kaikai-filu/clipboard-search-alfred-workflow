@@ -107,6 +107,18 @@ cb :image :today
 cb :2026-05-01..2026-05-10 @vscode :text
 ```
 
+### 实际场景
+
+```
+cb :image :today                         今天截了哪些图？
+cb curl :text :3d @iterm                 最近3天在终端里 curl 了什么？
+cb TODO :text @vscode                    VS Code 中还有哪些待办标记？
+cb :file @finder :yesterday              昨天在 Finder 里复制了哪些文件？
+cb @chrome @safari :text :today          今天在浏览器里复制了哪些文字？
+cb deploy :text :7d                       这周关于 "deploy" 的片段都在哪？
+cb error :30m @vscode                    半小时内 VS Code 里的报错日志
+```
+
 ---
 
 ## 操作方式

@@ -101,6 +101,18 @@ cb :image :today
 cb :2026-05-01..2026-05-10 @vscode :text
 ```
 
+### Real-world Examples
+
+```
+cb :image :today                         What screenshots did I take today?
+cb curl :text :3d @iterm                What did I curl in the terminal recently?
+cb TODO :text @vscode                   Which TODOs are left in my code?
+cb :file @finder :yesterday             Files I copied from Finder yesterday?
+cb @chrome @safari :text :today         What text did I copy from browsers today?
+cb deploy :text :7d                      All "deploy"-related snippets this week
+cb error :30m @vscode                   Error logs from VS Code in the last 30 min
+```
+
 ---
 
 ## Operations
