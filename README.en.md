@@ -24,6 +24,10 @@ Go beyond Alfred's built-in clipboard viewer — search and filter thousands of 
 
 ### Direct Install (Recommended)
 
+Download the latest `Clipboard Search.alfredworkflow` from [Releases](https://github.com/kaikai-filu/clipboard-search-alfred-workflow/releases) and double-click to install.
+
+### Build from Source
+
 ```bash
 bash Makefile
 ```

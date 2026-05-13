@@ -26,6 +26,10 @@ Alfred 自带的剪贴板历史只能按时间顺序浏览，无法按关键字�
 
 ### 直接安装（推荐）
 
+前往 [Releases](https://github.com/kaikai-filu/clipboard-search-alfred-workflow/releases) 下载最新 `Clipboard Search.alfredworkflow`，双击安装。
+
+### 手动构建
+
 ```bash
 bash Makefile
 ```
