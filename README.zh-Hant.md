@@ -1,4 +1,8 @@
+[English](README.en.md) | [Español](README.es.md) | [日本語](README.ja.md) | [Français](README.fr.md) | [简体中文](README.md)
+
 # 剪貼板搜尋 · Clipboard Search for Alfred
+
+![banner](https://raw.githubusercontent.com/kaikai-filu/clipboard-search-alfred-workflow/main/assets/banner-img.png)
 
 基於 Alfred 5 剪貼板歷史功能（Powerpack 特性）。
 
@@ -23,6 +27,10 @@ Alfred 內建的剪貼板歷史只能按時間順序瀏覽，無法按關鍵字�
 ## 安裝
 
 ### 直接安裝（推薦）
+
+前往 [Releases](https://github.com/kaikai-filu/clipboard-search-alfred-workflow/releases) 下載最新 `Clipboard Search.alfredworkflow`，雙擊安裝。
+
+### 手動構建
 
 ```bash
 bash Makefile
@@ -105,6 +113,18 @@ cb :image :today
 cb :2026-05-01..2026-05-10 @vscode :text
 ```
 
+### 實際場景
+
+```
+cb :image :today                         今天截了哪些圖？
+cb curl :text :3d @iterm                最近3天在終端裡 curl 了什麼？
+cb TODO :text @vscode                    VS Code 中還有哪些待辦標記？
+cb :file @finder :yesterday              昨天在 Finder 裡複製了哪些檔案？
+cb @chrome @safari :text :today         今天在瀏覽器裡複製了哪些文字？
+cb deploy :text :7d                      這週關於 "deploy" 的片段都在哪？
+cb error :30m @vscode                    半小時內 VS Code 裡的報錯日誌
+```
+
 ---
 
 ## 操作方式
@@ -117,7 +137,7 @@ cb :2026-05-01..2026-05-10 @vscode :text
 
 每條結果顯示：
 - **標題**：文字首行 / 圖片尺寸 / 檔案名稱
-- **副標題**：複製時間 · 來源應用 · 類型圖示
+- **副標題**：複製時間 · 來源應用 · 類型圖示 · 字數 · 行數（文字條目）
 
 ---
 
@@ -170,11 +190,23 @@ alfred/
 ├── Makefile                            # 構建 .alfredworkflow
 ├── link.sh                             # 開發安裝/移除
 ├── .gitignore
+├── assets/
 └── src/clipboard-search/
     ├── info.plist                      # 工作流設定
     ├── cb_search.py                    # 搜尋腳本（Script Filter）
     └── cb_paste.py                     # 複製腳本（圖片/檔案用）
 ```
+
+---
+
+## AI 輔助開發
+
+使用 Claude Code CLI（搭載 DeepSeek-V4）輔助開發。主要貢獻：
+
+- **架構設計**：工作流結構、plist 連線配置
+- **程式碼生成**：Python 腳本、正則表達式、AppleScript
+- **除錯排錯**：分析 Alfred Debug 日誌定位焦點競爭等隱蔽問題
+- **多語言文件**：英文、日文、法文、西班牙文、繁體中文翻譯
 
 ## 許可
 

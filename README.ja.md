@@ -1,4 +1,8 @@
+[English](README.en.md) | [Español](README.es.md) | [Français](README.fr.md) | [繁體中文](README.zh-Hant.md) | [简体中文](README.md)
+
 # クリップボード検索 · Clipboard Search for Alfred
+
+![banner](https://raw.githubusercontent.com/kaikai-filu/clipboard-search-alfred-workflow/main/assets/banner-img.png)
 
 Alfred 5 のクリップボード履歴機能（Powerpack 機能）に対応。
 
@@ -23,6 +27,10 @@ Alfred 標準のクリップボードビューアを超えて、キーワード�
 ## インストール
 
 ### 直接インストール（推奨）
+
+[Releases](https://github.com/kaikai-filu/clipboard-search-alfred-workflow/releases) から最新の `Clipboard Search.alfredworkflow` をダウンロードし、ダブルクリックでインストール。
+
+### ソースからビルド
 
 ```bash
 bash Makefile
@@ -95,10 +103,24 @@ cb @vscode          VS Code から
 
 ### 組み合わせ検索
 
+すべてのフィルタを自由に組み合わせ可能：
+
 ```
 cb キーワード :text :today @chrome
 cb :image :today
 cb :2026-05-01..2026-05-10 @vscode :text
+```
+
+### 実用例
+
+```
+cb :image :today                         今日撮ったスクリーンショットは？
+cb curl :text :3d @iterm                最近ターミナルで curl したものは？
+cb TODO :text @vscode                   コードに残っている TODO は？
+cb :file @finder :yesterday              昨日 Finder でコピーしたファイルは？
+cb @chrome @safari :text :today         今日ブラウザでコピーしたテキストは？
+cb deploy :text :7d                      今週の "deploy" 関連スニペット
+cb error :30m @vscode                   直近30分の VS Code 内のエラーログ
 ```
 
 ---
@@ -113,7 +135,7 @@ cb :2026-05-01..2026-05-10 @vscode :text
 
 各結果の表示：
 - **タイトル**：テキストの先頭行 / 画像サイズ / ファイル名
-- **サブタイトル**：タイムスタンプ · ソースアプリ · タイプアイコン
+- **サブタイトル**：タイムスタンプ · ソースアプリ · タイプアイコン · 文字数 · 行数（テキスト）
 
 ---
 
@@ -166,11 +188,23 @@ alfred/
 ├── Makefile
 ├── link.sh
 ├── .gitignore
+├── assets/
 └── src/clipboard-search/
     ├── info.plist
     ├── cb_search.py
     └── cb_paste.py
 ```
+
+---
+
+## AI 支援開発
+
+Claude Code CLI（DeepSeek-V4 搭載）を使用して開発されました。主な貢献：
+
+- **アーキテクチャ設計** — ワークフロー構造と plist 接続
+- **コード生成** — Python スクリプト、正規表現、AppleScript
+- **デバッグ** — Alfred デバッグログの分析によるフォーカス競合の特定
+- **多言語ドキュメント** — 英語、日本語、フランス語、スペイン語、繁体字中国語の翻訳
 
 ## ライセンス
 

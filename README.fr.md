@@ -1,4 +1,8 @@
+[English](README.en.md) | [Español](README.es.md) | [日本語](README.ja.md) | [繁體中文](README.zh-Hant.md) | [简体中文](README.md)
+
 # Recherche de presse-papiers · Clipboard Search for Alfred
+
+![banner](https://raw.githubusercontent.com/kaikai-filu/clipboard-search-alfred-workflow/main/assets/banner-img.png)
 
 Fonctionne avec l'historique du presse-papiers d'Alfred (fonctionnalité Powerpack).
 
@@ -23,6 +27,10 @@ Allez au-delà du visualiseur de presse-papiers intégré d'Alfred — recherche
 ## Installation
 
 ### Installation directe (recommandée)
+
+Téléchargez le dernier `Clipboard Search.alfredworkflow` depuis [Releases](https://github.com/kaikai-filu/clipboard-search-alfred-workflow/releases) et double-cliquez pour installer.
+
+### Compilation depuis les sources
 
 ```bash
 bash Makefile
@@ -95,10 +103,24 @@ cb @vscode          Depuis VS Code
 
 ### Requêtes combinées
 
+Tous les filtres sont combinables :
+
 ```
 cb mot-clé :text :today @chrome
 cb :image :today
 cb :2026-05-01..2026-05-10 @vscode :text
+```
+
+### Exemples concrets
+
+```
+cb :image :today                         Quelles captures d'écran ai-je prises aujourd'hui ?
+cb curl :text :3d @iterm                Qu'ai-je curl récemment dans le terminal ?
+cb TODO :text @vscode                   Quelles tâches restent dans mon code ?
+cb :file @finder :yesterday             Fichiers copiés depuis le Finder hier ?
+cb @chrome @safari :text :today         Texte copié depuis les navigateurs aujourd'hui ?
+cb deploy :text :7d                      Tous les extraits liés à "deploy" cette semaine
+cb error :30m @vscode                   Logs d'erreur de VS Code des 30 dernières minutes
 ```
 
 ---
@@ -113,7 +135,7 @@ cb :2026-05-01..2026-05-10 @vscode :text
 
 Chaque résultat affiche :
 - **Titre** : première ligne / dimensions de l'image / nom du fichier
-- **Sous-titre** : horodatage · application source · icône de type
+- **Sous-titre** : horodatage · application source · icône de type · nombre de caractères · nombre de lignes (texte)
 
 ---
 
@@ -166,11 +188,23 @@ alfred/
 ├── Makefile
 ├── link.sh
 ├── .gitignore
+├── assets/
 └── src/clipboard-search/
     ├── info.plist
     ├── cb_search.py
     └── cb_paste.py
 ```
+
+---
+
+## Développement assisté par IA
+
+Développé avec Claude Code CLI (propulsé par DeepSeek-V4). Contributions clés :
+
+- **Conception de l'architecture** — structure du workflow et connexions plist
+- **Génération de code** — scripts Python, expressions régulières, AppleScript
+- **Débogage** — analyse des logs Alfred pour identifier les problèmes de concurrence de focus
+- **Documentation multilingue** — traductions en anglais, japonais, français, espagnol et chinois traditionnel
 
 ## Licence
 
