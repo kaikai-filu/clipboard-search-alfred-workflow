@@ -5,21 +5,12 @@ import os
 import sqlite3
 import subprocess
 import sys
-from datetime import datetime
+import tempfile
 
 DB_PATH = os.path.expanduser(
     "~/Library/Application Support/Alfred/Databases/clipboard.alfdb"
 )
 DATA_DIR = DB_PATH + ".data"
-DEBUG_LOG = "/tmp/cb_paste_debug.log"
-
-
-def log(msg):
-    try:
-        with open(DEBUG_LOG, "a") as f:
-            f.write(f"{datetime.now():%H:%M:%S.%f} {msg}\n")
-    except Exception:
-        pass
 
 
 def set_clipboard_text(text):
@@ -56,17 +47,13 @@ def set_clipboard_image(image_path):
 
 
 def paste():
-    """Write a background AppleScript to a temp file and spawn it.
+    """Spawn a background AppleScript to paste after Alfred closes.
 
     The main script exits immediately so Alfred can close (vitoclose=true).
-    The background osascript polls until Alfred loses focus, then pastes.
+    The background process polls until Alfred is no longer frontmost, then
+    fires Cmd+V into the previous application.
     """
-    import tempfile
-
     script = """on run
-    set logFile to "/tmp/cb_paste_debug.log"
-    do shell script "date '+%H:%M:%S bg-start' >> " & quoted form of logFile
-
     repeat 30 times
         set frontApp to ""
         try
@@ -74,48 +61,36 @@ def paste():
                 set frontApp to name of first process whose frontmost is true
             end tell
         end try
-        do shell script "echo 'bg-poll: " & frontApp & "' >> " & quoted form of logFile
         if frontApp is not "Alfred" and frontApp is not "Alfred 5" then exit repeat
         delay 0.1
     end repeat
 
     delay 0.3
 
-    set frontApp to ""
-    try
-        tell application "System Events"
-            set frontApp to name of first process whose frontmost is true
-        end tell
-    end try
-    do shell script "echo 'bg-paste-into: " & frontApp & "' >> " & quoted form of logFile
-
     tell application "System Events"
         keystroke "v" using command down
     end tell
-
-    do shell script "date '+%H:%M:%S bg-done' >> " & quoted form of logFile
 end run"""
 
     fd, path = tempfile.mkstemp(suffix=".scpt", prefix="cb_paste_")
     with os.fdopen(fd, "w") as f:
         f.write(script)
 
-    proc = subprocess.Popen(["osascript", path],
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    log(f"spawned bg paste pid={proc.pid} script={path}")
+    subprocess.Popen(
+        ["osascript", path],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
 
 
 def main():
-    log("=== cb_paste start ===")
-
     if len(sys.argv) < 2:
-        log("ERROR: no argument")
+        print("No argument provided", file=sys.stderr)
         sys.exit(1)
 
     arg = sys.argv[1]
     copy_only = arg.startswith("copyonly:")
     ts = arg.replace("copyonly:", "", 1) if copy_only else arg
-    log(f"arg={arg} ts={ts} copy_only={copy_only}")
 
     try:
         conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
@@ -127,17 +102,16 @@ def main():
         row = cursor.fetchone()
         conn.close()
     except sqlite3.Error as e:
-        log(f"DB error: {e}")
+        print(f"Database error: {e}", file=sys.stderr)
         sys.exit(1)
 
     if not row:
-        log("No entry found")
+        print(f"No entry found for ts={ts}", file=sys.stderr)
         sys.exit(1)
 
     item = row["item"] or ""
     data_type = row["dataType"]
     data_hash = row["dataHash"] or ""
-    log(f"data_type={data_type} item_preview={item[:60]}")
 
     ok = False
 
@@ -151,7 +125,7 @@ def main():
             if not ok:
                 ok = set_clipboard_file(image_path)
         else:
-            log(f"Image file not found: {image_path}")
+            print(f"Image file not found: {image_path}", file=sys.stderr)
             sys.exit(1)
     elif data_type == 2:
         base_hash = data_hash.replace(".tiff", "")
@@ -165,34 +139,30 @@ def main():
                 if os.path.exists(original_path):
                     ok = set_clipboard_file(original_path)
                 else:
-                    log(f"Original file not found: {original_path}")
+                    print(f"Original file not found: {original_path}", file=sys.stderr)
                     sys.exit(1)
             else:
-                log("Invalid plist format")
+                print("Invalid plist format", file=sys.stderr)
                 sys.exit(1)
         else:
             alt_path = os.path.join(DATA_DIR, base_hash)
             if os.path.exists(alt_path):
                 ok = set_clipboard_file(alt_path)
             else:
-                log(f"No data found for hash: {base_hash}")
+                print(f"No data found for hash: {base_hash}", file=sys.stderr)
                 sys.exit(1)
     else:
-        log(f"Unknown data type: {data_type}")
+        print(f"Unknown data type: {data_type}", file=sys.stderr)
         sys.exit(1)
 
     if not ok:
-        log("Failed to copy to clipboard")
+        print("Failed to copy to clipboard", file=sys.stderr)
         sys.exit(1)
 
-    log("copy OK")
-
     if copy_only:
-        log("copy_only mode, skipping paste")
         return
 
     paste()
-    log("=== cb_paste done ===")
 
 
 if __name__ == "__main__":
