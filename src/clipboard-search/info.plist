@@ -183,7 +183,7 @@ Go beyond Alfred's built-in clipboard viewer — search and filter thousands of 
 - **Keyword search** — full-text search across clipboard history
 - **Type filters** — `:text` `:image` `:file`
 - **Time filters** — `:today` `:yesterday` `:2h` `:30m` `:3d`
-- **Date filters** — `:2026-05-10` or `:2026-05-01..2026-05-10`
+- **Date filters** — `:05-10` `:2026-05-10` or `:05-01..05-10`
 - **App filters** — `@chrome` `@finder` `@vscode`
 - **Combine them all** — `cb keyword :text :today @chrome`
 - **Hotkey** — Cmd+Shift+C for quick access

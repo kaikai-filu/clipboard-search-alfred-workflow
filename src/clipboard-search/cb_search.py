@@ -72,9 +72,23 @@ def parse_query(query_str):
                 time_end = (datetime.strptime(m.group(2), "%Y-%m-%d") + timedelta(days=1)).replace(tzinfo=now.tzinfo)
             except ValueError:
                 keyword_parts.append(token)
+        elif m := re.match(r"^:(\d{2}-\d{2})\.\.(\d{2}-\d{2})$", token):
+            try:
+                y = str(now.year)
+                time_start = datetime.strptime(f"{y}-{m.group(1)}", "%Y-%m-%d").replace(tzinfo=now.tzinfo)
+                time_end = (datetime.strptime(f"{y}-{m.group(2)}", "%Y-%m-%d") + timedelta(days=1)).replace(tzinfo=now.tzinfo)
+            except ValueError:
+                keyword_parts.append(token)
         elif m := re.match(r"^:(\d{4}-\d{2}-\d{2})$", token):
             try:
                 d = datetime.strptime(m.group(1), "%Y-%m-%d").replace(tzinfo=now.tzinfo)
+                time_start = d
+                time_end = d + timedelta(days=1)
+            except ValueError:
+                keyword_parts.append(token)
+        elif m := re.match(r"^:(\d{2}-\d{2})$", token):
+            try:
+                d = datetime.strptime(f"{now.year}-{m.group(1)}", "%Y-%m-%d").replace(tzinfo=now.tzinfo)
                 time_start = d
                 time_end = d + timedelta(days=1)
             except ValueError:
