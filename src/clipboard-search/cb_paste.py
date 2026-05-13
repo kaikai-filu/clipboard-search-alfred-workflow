@@ -47,26 +47,14 @@ def set_clipboard_image(image_path):
 
 
 def paste():
-    """Spawn a background AppleScript to paste after Alfred closes.
+    """Spawn a background process that waits for Alfred to close, then pastes.
 
     The main script exits immediately so Alfred can close (vitoclose=true).
-    The background process polls until Alfred is no longer frontmost, then
-    fires Cmd+V into the previous application.
+    A simple fixed delay is more reliable than polling because the focus
+    transition from Alfred to the previous app is not instantaneous.
     """
     script = """on run
-    repeat 30 times
-        set frontApp to ""
-        try
-            tell application "System Events"
-                set frontApp to name of first process whose frontmost is true
-            end tell
-        end try
-        if frontApp is not "Alfred" and frontApp is not "Alfred 5" then exit repeat
-        delay 0.1
-    end repeat
-
-    delay 0.3
-
+    delay 0.6
     tell application "System Events"
         keystroke "v" using command down
     end tell
