@@ -1,6 +1,6 @@
 # Clipboard Search for Alfred
 
-An extended clipboard history search workflow for Alfred 5 (requires Powerpack).
+Works with Alfred Clipboard History (Powerpack feature).
 
 Go beyond Alfred's built-in clipboard viewer — search and filter thousands of entries by keyword, type, time, date, and source application.
 

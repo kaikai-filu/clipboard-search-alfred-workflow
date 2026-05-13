@@ -1,6 +1,6 @@
 # Recherche de presse-papiers · Clipboard Search for Alfred
 
-Un workflow de recherche avancée dans l'historique du presse-papiers pour Alfred 5 (nécessite Powerpack).
+Fonctionne avec l'historique du presse-papiers d'Alfred (fonctionnalité Powerpack).
 
 Allez au-delà du visualiseur de presse-papiers intégré d'Alfred — recherchez et filtrez des milliers d'entrées par mot-clé, type, horaire, date et application source.
 

@@ -1,6 +1,6 @@
 # 剪貼板搜尋 · Clipboard Search for Alfred
 
-Alfred 5 剪貼板歷史增強搜尋工作流（需 Powerpack 授權）。
+基於 Alfred 5 剪貼板歷史功能（Powerpack 特性）。
 
 Alfred 內建的剪貼板歷史只能按時間順序瀏覽，無法按關鍵字、類型或時間範圍檢索。本工作流直接讀取 Alfred 的剪貼板資料庫，提供多維度的搜尋與過濾能力，讓你在數千條剪貼板記錄中快速定位想要的內容。
 

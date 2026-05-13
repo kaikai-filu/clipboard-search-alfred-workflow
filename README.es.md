@@ -1,6 +1,6 @@
 # Búsqueda de portapapeles · Clipboard Search for Alfred
 
-Un workflow de búsqueda avanzada del historial del portapapeles para Alfred 5 (requiere Powerpack).
+Funciona con el historial del portapapeles de Alfred (funcionalidad Powerpack).
 
 Supera el visor de portapapeles integrado de Alfred — busca y filtra miles de entradas por palabra clave, tipo, hora, fecha y aplicación de origen.
 
