@@ -1,4 +1,4 @@
-[English](README.en.md) | [日本語](README.ja.md) | [Français](README.fr.md) | [繁體中文](README.zh-Hant.md)
+[English](README.en.md) | [Español](README.es.md) | [日本語](README.ja.md) | [Français](README.fr.md) | [繁體中文](README.zh-Hant.md)
 
 # 剪贴板搜索 · Clipboard Search for Alfred
 
